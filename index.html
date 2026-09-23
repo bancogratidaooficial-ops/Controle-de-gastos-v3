@@ -1,0 +1,123 @@
+<script>
+let gastos = JSON.parse(localStorage.getItem('v86_gastos')) || [];
+let saldoInicial = 1000;
+
+function salvar() {
+  localStorage.setItem('v86_gastos', JSON.stringify(gastos));
+  atualizarTela();
+}
+
+function adicionarGasto() {
+  const nome = document.getElementById('nomeGasto').value;
+  const valor = parseFloat(document.getElementById('valorGasto').value);
+  if (!nome || !valor) return alert('Preencha nome e valor!');
+  gastos.push({nome, valor, data: new Date().toLocaleDateString()});
+  document.getElementById('nomeGasto').value = '';
+  document.getElementById('valorGasto').value = '';
+  salvar();
+}
+
+function remover(index) {
+  gastos.splice(index, 1);
+  salvar();
+}
+
+function atualizarTela() {
+  const lista = document.getElementById('listaGastos');
+  const total = gastos.reduce((s, g) => s + g.valor, 0);
+  const resto = saldoInicial - total;
+  document.getElementById('totalGasto').innerText = 'R$ ' + total.toFixed(2).replace('.', ',');
+  document.getElementById('saldo').innerText = 'R$ ' + resto.toFixed(2).replace('.', ',');
+  lista.innerHTML = '';
+  gastos.slice().reverse().forEach((g, i) => {
+    const idx = gastos.length - 1 - i;
+    lista.innerHTML += `<div class="item"><div><b>${g.nome}</b><br><span>${g.data}</span></div><div style="text-align:right"><b style="color:red">- R$ ${g.valor.toFixed(2).replace('.', ',')}</b><br><span onclick="remover(${idx})" style="color:#888;cursor:pointer">remover</span></div></div>`;
+  });
+}
+atualizarTela();
+</script>
+<script>
+let gastos = JSON.parse(localStorage.getItem('v86_gastos')) || [];
+let saldoInicial = 1000;
+
+function salvar() {
+  localStorage.setItem('v86_gastos', JSON.stringify(gastos));
+  atualizarTela();
+}
+
+function adicionarGasto() {
+  const nome = document.getElementById('nomeGasto').value;
+  const valor = parseFloat(document.getElementById('valorGasto').value);
+  if (!nome || !valor) return alert('Preencha nome e valor!');
+  gastos.push({nome, valor, data: new Date().toLocaleDateString()});
+  document.getElementById('nomeGasto').value = '';
+  document.getElementById('valorGasto').value = '';
+  salvar();
+}
+
+function remover(index) {
+  gastos.splice(index, 1);
+  salvar();
+}
+
+function atualizarTela() {
+  const lista = document.getElementById('listaGastos');
+  const total = gastos.reduce((s, g) => s + g.valor, 0);
+  const resto = saldoInicial - total;
+  document.getElementById('totalGasto').innerText = 'R$ ' + total.toFixed(2).replace('.', ',');
+  document.getElementById('saldo').innerText = 'R$ ' + resto.toFixed(2).replace('.', ',');
+  lista.innerHTML = '';
+  gastos.slice().reverse().forEach((g, i) => {
+    const idx = gastos.length - 1 - i;
+    lista.innerHTML += `<div class="item"><div><b>${g.nome}</b><br><span>${g.data}</span></div><div style="text-align:right"><b style="color:red">- R$ ${g.valor.toFixed(2).replace('.', ',')}</b><br><span onclick="remover(${idx})" style="color:#888;cursor:pointer">remover</span></div></div>`;
+  });
+}
+atualizarTela();
+</script>
+<!-- BOTÃO INSTALAR -->
+<button id="btnInstalar" style="display:none; width: calc(100% - 30px); margin: 0 15px 15px 15px; padding: 14px; background: #ffcc00; color: #000; border: none; border-radius: 12px; font-weight: bold; font-size: 16px;">
+  📲 Instalar App no Celular
+</button>
+
+<!-- BLOCO COMPARTILHAR -->
+<div style="background: linear-gradient(135deg, #FFD700, #FFA500); margin: 15px; padding: 20px; border-radius: 16px; text-align: center;">
+  <h3 style="margin:0 0 10px 0;">Gostou do controle? 💰</h3>
+  <p style="margin:0 0 15px 0;">Compartilhe com amigos e família!</p>
+  <button onclick="compartilharAppGeral()" style="width: 100%; padding: 12px; margin-bottom: 10px; background: #25D366; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 15px;">
+    💚 Compartilhar no WhatsApp
+  </button>
+  <button onclick="compartilharAppGeral()" style="width: 100%; padding: 12px; background: #000; color: #FFD700; border: none; border-radius: 10px; font-weight: bold; font-size: 15px;">
+    👥 Convidar Amigo
+  </button>
+</div>
+
+<script>
+let appParaInstalar = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  appParaInstalar = e;
+  document.getElementById('btnInstalar').style.display = 'block';
+});
+document.getElementById('btnInstalar').addEventListener('click', async () => {
+  if (!appParaInstalar) return;
+  appParaInstalar.prompt();
+  const escolha = await appParaInstalar.userChoice;
+  if (escolha.outcome === 'accepted') {
+    document.getElementById('btnInstalar').style.display = 'none';
+  }
+  appParaInstalar = null;
+});
+
+function compartilharAppGeral() {
+  const url = window.location.href;
+  const texto = 'Tenha controle em seus gastos! Estou usando o V86 GASTOS e é top demais: ';
+  if (navigator.share) {
+    navigator.share({ title: 'V86 GASTOS', text: texto, url: url });
+  } else {
+    const mensagem = encodeURIComponent(texto + url);
+    window.open('https://wa.me/?text=' + mensagem, '_blank');
+  }
+}
+</script>
+</body>
+</html>
